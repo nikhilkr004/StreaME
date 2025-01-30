@@ -22,4 +22,7 @@ object Utils {
     fun hideDialog() {
         dialog!!.dismiss()
     }
+    fun currentUserId(): String {
+        return auth.currentUser!!.uid
+    }
 }

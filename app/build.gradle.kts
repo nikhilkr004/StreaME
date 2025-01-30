@@ -76,6 +76,6 @@ dependencies {
     
     implementation ("com.github.vkay94:DoubleTapPlayerView:1.0.4")
     implementation ("im.zego:express-audio:3.12.4")
-    implementation ("com.zegocloud:zego-express-engine:3.0.0")
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
 
 }
