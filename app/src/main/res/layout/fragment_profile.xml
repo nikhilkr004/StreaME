@@ -24,6 +24,8 @@
     <ImageButton
         android:id="@+id/editProfile"
         android:layout_width="@dimen/_33sdp"
+        android:clickable="true"
+        android:focusable="true"
         android:layout_height="@dimen/_33sdp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
@@ -35,8 +37,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
+        android:layout_width="@dimen/_90sdp"
+        android:layout_height="@dimen/_90sdp"
         android:layout_marginTop="60dp"
         android:src="@drawable/user_"
         android:tint="@color/white"
@@ -53,9 +55,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_3sdp"
-        android:text="name"
+
         android:textStyle="bold"
-        android:textSize="15sp"
+        android:textSize="@dimen/_15sdp"
         android:textAlignment="center"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/profile_image"
@@ -68,7 +70,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_3sdp"
-        android:text="email"
+        android:textSize="@dimen/_13sdp"
         android:textAlignment="center"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/userName"
