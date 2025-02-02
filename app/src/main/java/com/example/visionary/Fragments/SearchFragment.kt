@@ -1,33 +1,34 @@
 package com.example.visionary.Fragments
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.visionary.R
+import android.widget.Toast
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.visionary.AdapterClass.CategoryAdapter
+import com.example.visionary.AdapterClass.CategoryMovieAdapter
+import com.example.visionary.AdapterClass.MainMovieAdapter
+import com.example.visionary.DataClass.Category
+import com.example.visionary.DataClass.MovieData
+import com.example.visionary.databinding.FragmentSearchBinding
+import com.google.firebase.firestore.FirebaseFirestore
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [SearchFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SearchFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var binding: FragmentSearchBinding
+    private lateinit var db: FirebaseFirestore
+    private var movieDataForSearch= mutableListOf<MovieData>()
+    private lateinit var adapters:CategoryMovieAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
     }
 
     override fun onCreateView(
@@ -35,26 +36,120 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_search, container, false)
+
+        binding = FragmentSearchBinding.inflate(inflater, container, false)
+
+        db = FirebaseFirestore.getInstance()
+
+        val recyclerView = binding.popularRecyclerview
+        recyclerView.layoutManager =LinearLayoutManager(requireContext(),RecyclerView.HORIZONTAL,false)
+
+        // Initialize adapter outside the listener
+
+         adapters = CategoryMovieAdapter(movieDataForSearch)
+        recyclerView.adapter = adapters
+
+
+
+
+
+        fatchMoview()
+        binding.searchInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                filterList(p0.toString())
+            }
+        })
+        fatchCategoty()
+
+
+
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SearchFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SearchFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    private fun fatchMoview() {
+
+
+        val collection = db.collection("mediaFiles")
+
+        collection.addSnapshotListener { snapshot, exception ->
+            if (exception != null) {
+                println("Error fetching data: ${exception.message}")
+                Toast.makeText(requireContext(), "${exception.message} error", Toast.LENGTH_SHORT).show()
+                return@addSnapshotListener
             }
+
+            if (snapshot != null && !snapshot.isEmpty) {
+                movieDataForSearch.clear()
+
+                for (document in snapshot.documents) {
+                    val dataItem = document.toObject(MovieData::class.java)
+                    if (dataItem != null) {
+                        movieDataForSearch.add(dataItem)
+                    }
+                }
+
+                adapters.updateList(movieDataForSearch)
+
+                // Notify adapter after data changes
+                adapters.notifyDataSetChanged()
+            }
+        }
+    }
+
+    private fun fatchCategoty() {
+        val movieData = ArrayList<Category>()
+        val collectionRef = db.collection("Category")
+        collectionRef.addSnapshotListener { snapshot, exception ->
+            if (exception != null) {
+                // Handle any errors
+                println("Error fetching data: ${exception.message}")
+
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null && !snapshot.isEmpty) {
+
+                movieData.clear()
+
+                for (document in snapshot.documents) {
+                    // Convert document to TeacherItem object
+                    val teaItem = document.toObject(Category::class.java)
+                    if (teaItem != null) {
+                        movieData.add(teaItem)
+
+                    }
+                }
+
+                setUpAdapter(movieData)
+
+
+            }
+        }
+    }
+
+
+    private fun setUpAdapter(movieData: ArrayList<Category>) {
+        val rv = binding.categoryRecyclerview
+        rv.layoutManager = GridLayoutManager(requireContext(),2)
+        rv.setHasFixedSize(true)
+
+        val adapters = CategoryAdapter(movieData)
+
+        rv.adapter = adapters
+
+    }
+    private fun filterList(query: String) {
+        val filteredList = movieDataForSearch.filter {
+            it.movieName.contains(query, ignoreCase = true)
+        }
+        adapters.updateList(filteredList)
     }
 }

@@ -1,14 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/black1"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".Fragments.SearchFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+
+
+    <EditText
+        android:id="@+id/searchInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search..."
+        android:fontFamily="@font/coiny"
+        android:padding="12dp"
+        android:layout_margin="@dimen/_3sdp"
+        android:background="@android:drawable/editbox_background"
+        android:drawableLeft="@android:drawable/ic_menu_search" />
+
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:text="New release"
+        android:layout_marginLeft="@dimen/_5sdp"
+        android:textSize="@dimen/_16sdp"
+        android:textColor="@color/white"
+        android:layout_marginTop="@dimen/_6sdp"
+        android:fontFamily="@font/coiny"/>
 
-</FrameLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:id="@+id/popular_Recyclerview"
+        android:layout_marginTop="@dimen/_6sdp"
+        android:layout_height="wrap_content" />
+
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Categorys"
+    android:layout_marginLeft="@dimen/_5sdp"
+    android:textSize="@dimen/_16sdp"
+    android:textColor="@color/white"
+    android:layout_marginTop="@dimen/_6sdp"
+    android:fontFamily="@font/coiny"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:id="@+id/category_Recyclerview"
+        android:layout_marginTop="@dimen/_6sdp"
+        android:layout_height="wrap_content" />
+</LinearLayout>
