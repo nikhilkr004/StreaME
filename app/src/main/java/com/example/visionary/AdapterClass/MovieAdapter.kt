@@ -21,6 +21,7 @@ class MovieAdapter (private val banners: List<MovieData>) : RecyclerView.Adapter
         fun bind(data: MovieData) {
             val  context=binding.root.context
             Glide.with(context).load(data.movieImage).into(binding.movieImage)
+
             binding.root.setOnClickListener {
                 val intent=Intent(context,PlayerActivity::class.java)
                 intent.putExtra("uri",data.movieVideo)
