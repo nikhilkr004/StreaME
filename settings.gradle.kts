@@ -7,6 +7,7 @@ pluginManagement {
         maven (url = "https://jitpack.io")
 
 
+
     }
 }
 dependencyResolutionManagement {
