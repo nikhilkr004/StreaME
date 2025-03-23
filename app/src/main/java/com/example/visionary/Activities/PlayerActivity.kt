@@ -11,6 +11,7 @@ import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.view.GestureDetector
@@ -32,6 +33,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.transition.Visibility
 import com.example.visionary.R
+import com.example.visionary.RoomDatabase.VideoDatabase
+import com.example.visionary.RoomDatabase.VideoEntity
 import com.example.visionary.databinding.ActivityPlayerBinding
 import com.example.visionary.databinding.MoreFeatureBinding
 import com.github.vkay94.dtpv.youtube.YouTubeOverlay
@@ -42,10 +45,16 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import im.zego.zegoexpress.ZegoExpressEngine
 import im.zego.zegoexpress.constants.ZegoRoomState
 import im.zego.zegoexpress.constants.ZegoUpdateType
 import im.zego.zegoexpress.entity.ZegoUser
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.File
 import java.util.Locale
 import kotlin.math.abs
 
@@ -62,7 +71,7 @@ class PlayerActivity : AppCompatActivity(), AudioManager.OnAudioFocusChangeListe
 
 
     companion object {
-
+        private lateinit var videoID:String
         private lateinit var player: ExoPlayer
         private var isFullScreen: Boolean = false
         private var isLocked: Boolean = false
@@ -115,6 +124,11 @@ class PlayerActivity : AppCompatActivity(), AudioManager.OnAudioFocusChangeListe
     private fun initalizedBinding() {
 
 
+        binding.addFriend.setOnClickListener {
+            val database = VideoDatabase.getDatabase(this)
+            downloadAndSaveVideo(this, videoID,database)
+        }
+
         binding.backBtn.setOnClickListener {
             finish()
         }
@@ -155,6 +169,12 @@ class PlayerActivity : AppCompatActivity(), AudioManager.OnAudioFocusChangeListe
         binding.adjustVideo.setOnClickListener {
             adjustVideoQuality()
         }
+
+
+
+
+
+
         binding.moreFeatureBtn.setOnClickListener {
             pauseVideo()
             val customDialog =
@@ -289,6 +309,10 @@ class PlayerActivity : AppCompatActivity(), AudioManager.OnAudioFocusChangeListe
         val videoUri = intent.getStringExtra("uri").toString()
         val videoName = intent.getStringExtra("movieName").toString()
         val videoImage = intent.getStringExtra("videoImage").toString()
+        videoID=intent.getStringExtra("videoID").toString()
+
+
+
 
         createPlayer(videoUri, videoImage, videoName)
     }
@@ -529,4 +553,38 @@ class PlayerActivity : AppCompatActivity(), AudioManager.OnAudioFocusChangeListe
 
     }
 
+
+    fun downloadAndSaveVideo(context: Context, videoId: String, database: VideoDatabase) {
+        val firestore = FirebaseFirestore.getInstance()
+
+        // Fetch video URL from Firestore
+        firestore.collection("Banner").document("6WDOTl6Dozl0s3TOWO39").get()
+            .addOnSuccessListener { document ->
+                val videoUrl = document.getString("movieVideo") ?: return@addOnSuccessListener
+                val videoName = document.getString("movieName") ?: "downloaded_video.mp4"
+
+                val storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(videoUrl)
+                val localFile = File(
+                    context.getExternalFilesDir(Environment.DIRECTORY_MOVIES),
+                    videoName
+                )
+
+                storageRef.getFile(localFile)
+                    .addOnSuccessListener {
+                        Toast.makeText(context, "Video downloaded!", Toast.LENGTH_SHORT).show()
+
+                        // Save the video path in Room Database
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val videoEntity = VideoEntity(videoName = videoName, videoPath = localFile.absolutePath)
+                            database.videoDao().insertVideo(videoEntity)
+                        }
+
+                    }.addOnFailureListener {
+                        Toast.makeText(context, "Download Failed: ${it.message}", Toast.LENGTH_LONG).show()
+                    }
+            }
+            .addOnFailureListener {
+                Toast.makeText(context, "Failed to get video URL from Firestore", Toast.LENGTH_LONG).show()
+            }
+    }
 }

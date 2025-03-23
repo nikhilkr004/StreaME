@@ -29,7 +29,7 @@
             <!-- Movie Image -->
             <ImageView
                 android:id="@+id/movie_image"
-                android:layout_width="121dp"
+                android:layout_width="100dp"
                 android:layout_height="114dp"
                 android:layout_marginStart="@dimen/_3sdp"
                 android:layout_marginTop="@dimen/_3sdp"
@@ -61,7 +61,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Category"
-                android:fontFamily="@font/paytone_one"
                 android:layout_below="@id/movieName"
                 android:layout_toEndOf="@id/movie_image"
                 android:layout_marginStart="@dimen/_5sdp"
@@ -72,8 +71,7 @@
                 android:id="@+id/movieDurations"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Duration"
-                android:fontFamily="@font/paytone_one"
+                android:text="Durations"
                 android:layout_below="@id/movieCategories"
                 android:layout_toEndOf="@id/movie_image"
                 android:layout_marginStart="@dimen/_5sdp"

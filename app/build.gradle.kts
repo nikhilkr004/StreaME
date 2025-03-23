@@ -78,4 +78,11 @@ dependencies {
     implementation ("im.zego:express-audio:3.12.4")
     implementation ("de.hdodenhof:circleimageview:3.1.0")
 
+
+    // Room Database
+    implementation ("androidx.room:room-runtime:2.5.2")
+    implementation ("androidx.room:room-ktx:2.5.2")
+///rozor pay
+    implementation ("com.razorpay:checkout:1.6.40")
+
 }

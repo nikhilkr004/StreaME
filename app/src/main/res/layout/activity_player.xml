@@ -124,7 +124,7 @@
             android:layout_height="@dimen/_30sdp"
             android:layout_marginRight="@dimen/_30sdp"
             android:backgroundTint="#00000000"
-            android:src="@drawable/background"
+            android:src="@drawable/baseline_cloud_download_24"
             app:tint="@color/white" />
 
     </LinearLayout>

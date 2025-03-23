@@ -49,6 +49,10 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
+        <meta-data
+            android:name="com.razorpay.ApiKey"
+            android:value="rzp_test_N9hgXP1L6tCGPm"/>
     </application>
 
 </manifest>
